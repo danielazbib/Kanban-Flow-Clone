@@ -11,7 +11,28 @@ const Board = () => {
     { id: uuidv4(), title: 'Done', cards: [] },
   ]);
 
+  const handleCardDrop = (cardId, targetListId) => {
+    setLists((prevLists) => {
+      const updatedLists = [...prevLists];
 
+      // Find the source list and card
+      const sourceList = updatedLists.find((list) =>
+        list.cards.find((card) => card.id === cardId)
+      );
+      const sourceCard = sourceList.cards.find((card) => card.id === cardId);
+
+      // Remove the card from the source list
+      sourceList.cards = sourceList.cards.filter((card) => card.id !== cardId);
+
+      // Find the target list
+      const targetList = updatedLists.find((list) => list.id === targetListId);
+
+      // Add the card to the target list
+      targetList.cards.push(sourceCard);
+
+      return updatedLists;
+    });
+  };
   const handleCreateCard = (listId) => {
     setLists((prevLists) => {
       const updatedLists = prevLists.map((list) => {
@@ -44,6 +65,7 @@ const Board = () => {
             key={list.id}
             list={list}
             cards={list.cards}
+            onCardDrop={handleCardDrop} 
             onCreateCard={handleCreateCard}
           />
         ))}
