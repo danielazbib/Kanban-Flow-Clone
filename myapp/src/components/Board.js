@@ -55,8 +55,20 @@ const Board = () => {
       return updatedLists;
     });
   };
+  const addColumn = () => {
+    setLists((prevLists) => {
+      const newColumn = {
+        id: uuidv4(),
+        title: 'New Column',
+        cards: [],
+      };
+      return [...prevLists, newColumn];
+    });
+  };
+  const handleDeleteColumn = (columnId) => {
+    setLists((prevLists) => prevLists.filter((list) => list.id !== columnId));
+  };
   
-
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="board">
@@ -64,11 +76,14 @@ const Board = () => {
           <List
             key={list.id}
             list={list}
+            onDeleteColumn={handleDeleteColumn}
             cards={list.cards}
             onCardDrop={handleCardDrop} 
             onCreateCard={handleCreateCard}
           />
+          
         ))}
+        <button onClick={addColumn}>Add Column</button>
       </div>
     </DndProvider>
   );
