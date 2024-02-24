@@ -11,6 +11,9 @@ const Board = () => {
     { id: uuidv4(), title: 'Done', cards: [] },
   ]);
 
+  const [showModal, setShowModal] = useState(false);
+  const [newColumnTitle, setNewColumnTitle] = useState('');
+
   const handleCardDrop = (cardId, targetListId) => {
     setLists((prevLists) => {
       const updatedLists = [...prevLists];
@@ -55,7 +58,32 @@ const Board = () => {
       return updatedLists;
     });
   };
+
+  const handleDeleteColumn = (columnId) => {
+    setLists((prevLists) => prevLists.filter((list) => list.id !== columnId));
+  };
   
+  const addColumn = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setNewColumnTitle('');
+  };
+
+  const handleConfirmModal = () => {
+    if (newColumnTitle.trim() !== '') {
+      const newColumn = {
+        id: uuidv4(),
+        title: newColumnTitle.trim(),
+        cards: [],
+      };
+      setLists((prevLists) => [...prevLists, newColumn]);
+      setShowModal(false);
+      setNewColumnTitle('');
+    }
+  };
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -67,8 +95,29 @@ const Board = () => {
             cards={list.cards}
             onCardDrop={handleCardDrop} 
             onCreateCard={handleCreateCard}
+            onDeleteColumn={handleDeleteColumn}
           />
         ))}
+        <button onClick={addColumn}>Add Another List</button>
+        {showModal && (
+          <div className="modal">
+          <div className="modal-content">
+            
+            <input
+              type="text"
+              value={newColumnTitle}
+              onChange={(e) => setNewColumnTitle(e.target.value)}
+            />
+            <div>
+              <button onClick={handleConfirmModal}>Add List</button>
+              <button className="close" onClick={handleCloseModal}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        )}
       </div>
     </DndProvider>
   );
